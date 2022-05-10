@@ -1,4 +1,5 @@
 #include "ssp2_lab.h"
+#include "gpio.h"
 
 void init__ssp_cr0();
 void init__ssp_cr1();
@@ -8,6 +9,9 @@ void ssp2_lab__init(uint32_t max_clock_mhz) {
   // Refer to LPC User Manual and set up the register bits correctly
   // a) Power on Peripheral
   LPC_SC->PCONP |= SSP2_POWER;
+  gpio__construct_with_function(GPIO__PORT_1, 0, GPIO__FUNCTION_4);
+  gpio__construct_with_function(GPIO__PORT_1, 1, GPIO__FUNCTION_4);
+  gpio__construct_with_function(GPIO__PORT_1, 4, GPIO__FUNCTION_4);
   // b) Setup control register CR0 and CR1
   init__ssp_cr0();
   init__ssp_cr1();
@@ -36,7 +40,7 @@ void init__ssp_cr0() {
 
   LPC_SSP2->CR0 = SSP_CR0.reg;
 
-  fprintf(stderr, "CR0: 0x%lx\n", LPC_SSP2->CR0);
+  // fprintf(stderr, "CR0: 0x%lx\n", LPC_SSP2->CR0);
 }
 
 void init__ssp_cr1() {
@@ -45,7 +49,7 @@ void init__ssp_cr1() {
 
   LPC_SSP2->CR1 = SSP_CR1.reg;
 
-  fprintf(stderr, "CR1: 0x%lx\n", LPC_SSP2->CR1);
+  // fprintf(stderr, "CR1: 0x%lx\n", LPC_SSP2->CR1);
 }
 
 void init__ssp_prescalar(uint32_t max_clock_mhz) {
@@ -53,5 +57,5 @@ void init__ssp_prescalar(uint32_t max_clock_mhz) {
   uint32_t scalar = clock__get_peripheral_clock_hz() / (max_clock_mhz * 1000 * 1000);
 
   LPC_SSP2->CPSR = scalar % 2 == 0 ? scalar : 0b100 << 0; // default to 4 := SCR = 96mhz / 4 = 24mhz
-  fprintf(stderr, "CSPR: 0x%lx\n", LPC_SSP2->CPSR);
+  // fprintf(stderr, "CSPR: 0x%lx\n", LPC_SSP2->CPSR);
 }
